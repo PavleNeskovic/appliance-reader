@@ -15,8 +15,8 @@ function discoverAppliance(text) {
     var appliance = new Object();
     var modelNoDictionary = ["MODEL","MODEL:","MODELNO.","MODELNO:","M.N.","M/N","M/N:","MOD","MOD:","PRODUCT","PRODUCT:","P/N","P/N:","P.N.","PROD","PROD;"];
     var serialNoDictionary = ["SERIAL","SERIAL:","S/N","S/N:","S.N.","SER","SER:"];
-    var countriesDictionary = readCountries();
-    var brandDictionary = readBrands();
+    var countriesDictionary = readDictionary('resources/dictionaries/coutries.txt');
+    var brandDictionary = readDictionary('resources/dictionaries/appliances.txt');
     var modalNoKeys, serialNoKeys;
     //Split text into words
     words = text.convertIntoWords();
@@ -54,7 +54,7 @@ Array.prototype.nextTo = function(keys) {
 }
 
 Array.prototype.cleanup = function(){
-    var garbageDictionary = ["number","Number","NUMBER","no","No","NO",":","."," ",""];
+    var garbageDictionary = ["number","Number","NUMBER","no","No","NO","number:","Number:","NUMBER:","no:","No:","NO:","no.","No.","NO.",":","."," ",""];
     return this.filter(element => !garbageDictionary.includes(element));
 }
 
@@ -73,13 +73,10 @@ Array.prototype.diff = function(array2) {
     return this.filter(element => array2.includes(element));
 }
 
-function readCountries(file){
-    return fs.readFileSync('dictionaries/coutries.txt').toString().split('\n');
+function readDictionary(file){
+    return fs.readFileSync(file).toString().split('\n');
 }
 
-function readBrands(file){
-    return fs.readFileSync('dictionaries/appliances.txt').toString().split('\n');
-}
 function base64CodeToText(base64Code, callback) {
     base64ToImage(base64Code, function(filepath){
         imageToText(filepath, function(text){            
