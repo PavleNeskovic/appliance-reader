@@ -1,33 +1,21 @@
 var express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser');
-var ocr = require('../ocr/OCR');
-var base64Img = require('../base64-img/Base64Converter')
-var data = require('./testData');
-var fs = require('fs');
+var applianceService = require('./ApplianceService');
 
-router.use(bodyParser.urlencoded({ extended: true }));
-router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({limit: '50mb', extended: true }));
+router.use(bodyParser.json({limit: '50mb'}));
 
-router.get('/', function (req, res) {
-    //base64 to image
-    base64Img.img(data.base64Image,function(err, filepath){
-        if(err){
-            console.log(err)
-        } else {
-            //procces text from image
-            ocr.process(filepath, function(err, text){
-                if(err){
-                    console.log(err)
-                } else {
-                    //remove image
-                    fs.unlinkSync(filepath);
-                    //print text
-                    res.end(text);
-                }
-            });
-        }
-    });
+router.all('/', function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+   });
+
+router.post('/', function (req, res) {
+    applianceService.process(req.body.base64Code, function(text){
+        res.end(text);
+    })
 });
 
 module.exports = router;
